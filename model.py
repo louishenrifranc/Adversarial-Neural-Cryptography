@@ -87,8 +87,8 @@ class AdversarialNeuralCryptoNet(object):
                               self.SIZE_MESSAGE,
                               "eve", depth=3)
 
-        print(get_network_str(lasagne.layers.get_all_layers(eve_MLP.l_hid), get_network=False))
-        print(get_network_str(lasagne.layers.get_all_layers(bob_MLP.l_hid), get_network=False))
+    #    print(get_network_str(lasagne.layers.get_all_layers(eve_MLP.l_hid), get_network=False))
+    #    print(get_network_str(lasagne.layers.get_all_layers(bob_MLP.l_hid), get_network=False))
 
         # LOSS FUNCTIONS
         eve_loss = T.mean(T.abs_(X_msg - eve_MLP.get_output()))
@@ -99,10 +99,10 @@ class AdversarialNeuralCryptoNet(object):
         # PARAMS
         params, losses = {}, {}
         params['bob'] = bob_MLP.get_all_params() + alice_MLP.get_all_params()
-        params['eve'] = eve_MLP.get_params()
+        params['eve'] = eve_MLP.get_all_params()
 
         self.train_fn, self.test_fn = {}, {}
-        
+
         losses = {'bob': lasagne.updates.adadelta(bob_loss, params['bob'])}
         self.train_fn['bob'] = theano.function([X_msg, X_key], bob_loss, updates=losses['bob'])
         self.test_fn['bob'] = theano.function([X_msg, X_key], bob_loss)
