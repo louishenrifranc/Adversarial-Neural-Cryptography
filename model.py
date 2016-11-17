@@ -28,7 +28,6 @@ def gen_data(n, msg_len, key_len):
 class HiddenLayer(object):
     def __init__(self, inputs, size_batch, input_size, n_hidden, n_out, name, nonlinearity="relu", depth=1):
         self.depth = depth
-        self.params = []
         self.l_in = InputLayer((size_batch, input_size), input_var=inputs)
         self.l_hid = DenseLayer(self.l_in,
                                 num_units=n_hidden,
@@ -47,9 +46,6 @@ class HiddenLayer(object):
 
     def get_output(self):
         return get_output(self.l_hid)
-
-    def get_params(self):
-        return self.params
 
     def get_all_params(self):
         return get_all_params(self.l_hid)
@@ -105,9 +101,9 @@ class AdversarialNeuralCryptoNet(object):
         params['bob'] = bob_MLP.get_all_params() + alice_MLP.get_all_params()
         params['eve'] = eve_MLP.get_params()
 
-        losses = {'bob': lasagne.updates.adadelta(bob_loss, params['bob'])}
-
         self.train_fn, self.test_fn = {}, {}
+        
+        losses = {'bob': lasagne.updates.adadelta(bob_loss, params['bob'])}
         self.train_fn['bob'] = theano.function([X_msg, X_key], bob_loss, updates=losses['bob'])
         self.test_fn['bob'] = theano.function([X_msg, X_key], bob_loss)
 
